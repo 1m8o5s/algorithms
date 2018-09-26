@@ -1,19 +1,3 @@
-/*
-T3
-*^заповнює масив випадковими числами;
-*^виводить несортований масив на екран;
-*^записує його у файл (текстовий);  ^
-*виконує сортування заданим методом із підрахунком кількості операцій
-порівняння і перестановок;
-*^виводить на екран кількість порівнянь та перестановок;
-*^виводить на екран сортований масив.
-*^заносить результати у новий файл, спочатку кількість порівнянь та
-перестановок, потім весь масив.
-
-
-
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -46,46 +30,15 @@ void rand_push(struct st * stru, int width, int height){
 		(stru+i)->a2 = rand()%200;
 	}
 }
-/*void put_to_file(FILE * fp, int * arr, int width, int height){
-	for (int i = 0; i < width; i++){
-		for (int j = 0; j < height; j++){
-			fprintf(fp, "%d ", *(arr + width*i + j));
-		}
-		fprintf(fp, "\n");
-	}
-}*/
+
 void put_to_file(FILE * fp, struct st * arr, int width, int height){
 	for(int i = 0; i < height; i++){
 		for(int j = 0; j < width; j++){
-			fprintf(fp, "(%d, %d) ", (arr+i*width+j)->a1, (arr+i*width+j)->a2);
+			fprintf(fp, "(%2d, %3d) ", (arr+i*width+j)->a1, (arr+i*width+j)->a2);
 		}
-		puts("\n");
+		fprintf(fp, "\n");
 	}
 }
-
-//struct result * shell_sort(int* arr, int width, int height){
-//	struct result * res = (struct result*)malloc(sizeof(struct result));
-//	res->permutations = 0;
-//	res->comparison = 0;
-//	int k = height / 2;
-//	while (k != 0){
-//		for (int i = 0; i < k; i++){
-//			for (int j = i; j < height; j += k){
-//				for (int f = j; f >= 0; f -= k){
-//					if (*(arr + f*height) < *(arr + j*height)){
-//						ultra_swap(arr, f, j, height, width);
-//						res->permutations++;
-//					}
-//					res->comparison++;
-//				}
-//			}
-//		}
-//
-//		k--;
-//	}
-//	return res;
-//}
-
 
 struct result * shell_sort(struct st* arr, int width, int height){
 	struct result * res = (struct result*)malloc(sizeof(struct result));
@@ -139,8 +92,6 @@ void quick_sort(struct st* arr, int top, int bot, int height, int width, struct 
 			rs->comparison++;
 		}
 		rs->comparison++;
-		put_to_file(stdout, arr, width, height);
-		puts("\n");
 	}
 	if (top < j)quick_sort(arr, top, j, height, width, rs);
 	if (i < bot)quick_sort(arr, i, bot, height, width, rs);
@@ -148,35 +99,35 @@ void quick_sort(struct st* arr, int top, int bot, int height, int width, struct 
 int main(){
 	int width, height;
 	setlocale(LC_ALL, "ukr");
-	puts("Введiть ширину масиву");
+	puts("Р’РІРµРґiС‚СЊ С€РёСЂРёРЅСѓ РјР°СЃРёРІСѓ");
 	scanf("%d", &width);
-	puts("Введiть висоту масиву");
+	puts("Р’РІРµРґiС‚СЊ РІРёСЃРѕС‚Сѓ РјР°СЃРёРІСѓ");
 	scanf("%d", &height);
+
 	struct st* stru = (struct st*)malloc(height*width*sizeof(struct st));
-	//before sorting
 	rand_push(stru, width, height);
+
 	put_to_file(stdout, stru, width, height);
-	//FILE * fp = fopen("file.txt", "w");
-	//put_to_file(fp, stru, width, height);
+	FILE * fp = fopen("file1.txt", "w");
+	put_to_file(fp, stru, width, height);
+	fclose(fp);
 	puts("\n");
-	//fclose(fp);
 
-
-	//
-	struct result * rs = shell_sort(stru, width, height);
-	put_to_file(stdout, stru, width, height);
-	//struct result *rs = (struct result *)malloc(sizeof(struct result));
-
+	//quick_sort
+	struct result *rs = (struct result *)malloc(sizeof(struct result));
 	rs->comparison = 0;
 	rs->permutations = 0;
+	quick_sort(stru, 0, height-1, height, width, rs);
 
-	//quick_sort(stru, 0, height-1, height, width, rs);
-	//put_to_file(stdout, stru, width, height);
-	//after sorting
-	//printf("%d %d\n", rs->permutations, rs->comparison);
-	//FILE * fd = fopen("file1.txt", "w");
-	//fprintf(fp, "%d %d\n", rs->permutations, rs->comparison);
-	//fclose(fd);
+	//shell_sort
+	//struct result * rs = shell_sort(stru, width, height);
+	
+	printf("РљiР»СЊРєiСЃС‚СЊ РїРѕСЂiРІРЅСЏРЅСЊ: %d РљiР»СЊРєiСЃС‚СЊ РїРµСЂРµСЃС‚Р°РЅРѕРІРѕРє: %d\n", rs->comparison, rs->permutations);
+	put_to_file(stdout, stru, width, height);
+	FILE * fd = fopen("file2.txt", "w");
+	fprintf(fd, "РљiР»СЊРєiСЃС‚СЊ РїРѕСЂiРІРЅСЏРЅСЊ: %d РљiР»СЊРєiСЃС‚СЊ РїРµСЂРµСЃС‚Р°РЅРѕРІРѕРє: %d\n", rs->comparison, rs->permutations);
+	put_to_file(fd, stru, width, height);
+	fclose(fd);
 	system("pause");
 	return 0;
 }
